@@ -29,13 +29,15 @@ assembly <<= assembly dependsOn compileScalastyle
 // trim the assembly even further (20MB in the Scala library)
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
+assemblyExcludedJars in assembly := {
+ val ret = (file(sparkHome.value.get + "/jars/") * "*.jar").classpath.toList
+ ret
+}
+
+unmanagedJars in Compile ++= (file(sparkHome.value.get + "/jars/") * "*.jar").classpath
+
 def addSparkDependencies(sparkHome: Option[String]): Seq[ModuleID] = if (sparkHome.isDefined) {
-   Seq(
-     "org.apache.spark" %% "spark-core" % sparkVersion % "provided" ,
-     "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
-     "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
-     "org.apache.spark" %% "spark-sql" % sparkVersion % "provided")
-     .map(_.from(s"file:///${sparkHome.get}/jars"))
+   Seq()
  } else {
    Seq(
     "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
